@@ -1,6 +1,10 @@
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
 import os
 import requests
-from dotenv import load_dotenv
+
+app = FastAPI()
 
 load_dotenv()
 
@@ -18,17 +22,20 @@ headers = {
     "Content-Type": "application/json"
 }
 
-text = "Once upon a time in the small town of Cheddarville, known for its cheese production, lived a quirky inventor named Burt. Burt had spent his entire life attempting to build a device that would turn everything it touched into cheese. His ultimate dream was to make the entire town a cheesy paradise, where cheese would not be just a product, but a way of life."
+@app.post("/process_text")
+async def process_text(text: str):
+    payload = {
+        "content": text
+    }
 
-payload = {
-    "content": text
-}
+    try:
+        response = requests.post(url, headers=headers, json=payload, verify=True)
+        response.raise_for_status()
+        return JSONResponse(content=response.json())
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Error sending psychometric details: {e}")
 
-try:
-    response = requests.post(url, headers=headers, json=payload, verify=True)
-    response.raise_for_status()
-    print(response.json())
-except requests.exceptions.RequestException as e:
-    print(f"Error sending psychometric details: {e}")
-    # logger.error(f"Error sending psychometric details: {e}")
+if __name__ == "__main__":
+    import uvicorn
 
+    uvicorn.run(app, host="127.0.0.1", port=8000)
