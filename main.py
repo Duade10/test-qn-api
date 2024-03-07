@@ -10,7 +10,6 @@ load_dotenv()
 
 token = os.environ.get("token")
 
-# Replace 'API_TOKEN' with the actual environment variable name
 if not token:
     print("IIIII")
     # logger.error("API token not found. Make sure to set the 'API_TOKEN' environment variable.")
